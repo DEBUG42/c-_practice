@@ -75,5 +75,8 @@ class TeacherCadre:virtual public Teacher,virtual public Cadre{
         }
 };
 int main(){
-
+    TeacherCadre obj("张三", 30, "男", "教授", "教授", 5000);
+    obj.showInfo();
+    system("PAUSE");
+    return 0;
 }
