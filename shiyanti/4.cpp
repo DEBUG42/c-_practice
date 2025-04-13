@@ -1,4 +1,4 @@
-//可以增加退出确认机制多次游戏，记录分数
+//可以增加退出确认机制多次游戏，记录分数，增加创新点
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
