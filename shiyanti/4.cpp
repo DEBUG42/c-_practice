@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 //可以增加退出确认机制多次游戏，记录分数，增加创新点
+=======
+//可以增加退出确认机制多次游戏，记录分数
+>>>>>>> fcee89cee599c0f9c6d3338c16ef02536fe7c93b
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
