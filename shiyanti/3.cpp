@@ -1,3 +1,4 @@
+//倒计时还没有写好，基本功能已经完成
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
