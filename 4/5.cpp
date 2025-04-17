@@ -15,18 +15,135 @@ class Date{
     // 重载加法运算符，用于在日期上增加指定的天数
     Date operator+(int days){
         Date NewDate;
-        NewDate.day = day + days;
-        NewDate.month = month;
+        int temp = days;
+        while(temp > 0){
+        // 检查是否为闰年二月
+        if (month == 2  )
+            { // 是否为闰年
+                bool is_leap_year =(year % 4 == 0 && year % 100 != 0 || year % 400 == 0);
+                // 如果二月的天数加上临时天数超过29天
+                if(day + temp > 28+is_leap_year)
+                {
+                    // 计算超出天数，并调整月份和年份
+                    temp -= (28+is_leap_year - day);
+                    day = 1;
+                    month++;
+                }
+                else{
+                    // 计算剩余天数
+                    day += temp;
+                    temp = 0;
+                }
+            }
+        else if (month == 4 || month == 6 || month == 9 || month == 11)
+            { // 30天的月份
+                if(day + temp > 30)
+                {
+                    // 计算超出天数，并调整月份
+                    temp -= (30 - day);
+                    day = 1;
+                    month++;
+                }
+                else{
+                    // 计算剩余天数
+                    day += temp;
+                    temp = 0;
+                }
+            }
+        else{
+            // 其他月份的天数
+            if(day + temp > 31)
+            {
+                // 计算超出天数，并调整月份
+                temp -= (31 - day);
+                day = 1;
+                month++;
+                month %= 13;
+                year += (month / 12);
+            }
+            else{
+                // 计算剩余天数
+                day += temp;
+                temp = 0;
+            }
+        }    
         NewDate.year = year;
+        NewDate.month = month;
+        NewDate.day = day;
         return NewDate;
+    }
     }
 
     // 重载减法运算符，用于在日期上减少指定的天数
     Date operator-(int days){
         Date NewDate;
-        NewDate.day = day - days;
-        NewDate.month = month;
+        int temp = days;
+        while(temp > 0){
+            if( month == 1  ){
+                if(day - temp <= 0)
+                {
+                    // 计算超出天数，并调整月份和年份
+                    temp -= (day - 0);
+                    day = 31;
+                    month=12;
+                    year--;
+                }
+                else{
+                    // 计算剩余天数
+                    day -= temp;
+                    temp = 0;
+                }
+            }
+            // 检查是否为闰年二月
+            if (month == 3  ){
+                 // 是否为闰年
+                bool is_leap_year =(year % 4 == 0 && year % 100 != 0 || year % 400 == 0);
+                // 如果二月的天数减去临时天数小于0
+                if(day - temp <= 0)
+                {
+                // 计算超出天数，并调整月份和年份
+                temp -= (day - 0);
+                day = 28+is_leap_year;
+                month--;
+                }
+                else{
+                    // 计算剩余天数
+                    day -= temp;
+                    temp = 0;
+                }
+            }
+            if ( month == 2 || month == 4 || month == 6 || month == 8 || month == 9 || month == 11){
+                if(day - temp <= 0)
+                {
+                    // 计算超出天数，并调整月份
+                    temp -= (day - 0);
+                    day = 31;
+                    month--;
+                }
+                else{
+                    // 计算剩余天数
+                    day -= temp;
+                    temp = 0;
+                }
+            }
+            else{
+                if(day - temp <= 0)
+                {
+                    // 计算超出天数，并调整月份
+                    temp -= (day - 0);
+                    day = 30;
+                    month--;
+                }
+                else{
+                    // 计算剩余天数
+                    day -= temp;
+                    temp = 0;
+                }
+            }
+        }
         NewDate.year = year;
+        NewDate.month = month;
+        NewDate.day = day;
         return NewDate;
     }
 
