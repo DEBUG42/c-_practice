@@ -4,32 +4,50 @@
 #include <ctime>
 #include <string>
 using namespace std;
+
+// 定义选择类型的枚举
 typedef enum{
     ROCK,SCISSOR,CLOTH,DISPLAY,HELP,QUIT
 }SelectType;
+
+// 定义结果类型的枚举
 typedef enum{
     WIN,LOSE,TIE
 }ResultType;
 
+// 剪刀石头布游戏类
 class GameOfRockScissorCloth {
     private:
+        // 静态常量数组，存储选择的字符串表示
         static const string SelectString[3];
-        SelectType select1;//人的选择
-        SelectType select2;//计算机的选择
+        // 人的选择
+        SelectType select1;
+        // 计算机的选择
+        SelectType select2;
+        // 游戏结果
         ResultType result;
-        int num1;//人输入的
-        int num2;//计算机随机数
+        // 人输入的选择数字
+        int num1;
+        // 计算机随机选择的数字
+        int num2;
+        // 游戏是否继续标志
         bool isContinue = true;
+        // 静态变量，存储人的总得分
         static int score1;
+        // 静态变量，存储计算机的总得分
         static int score2;
     public:   
+        // 读取用户输入的选择
         void Read();
+        // 生成计算机随机选择
         void random_num();
+        // 判断游戏是否继续
         bool endGame(){
             return isContinue;
         }
+        // 游戏主逻辑函数
         void Game(){
-            //将num初始值转为其它数字
+            // 将num初始值转为其它数字
             Read();
             if(num1 == ROCK || num1 == SCISSOR || num1 == CLOTH){
                 random_num();
@@ -41,6 +59,8 @@ class GameOfRockScissorCloth {
 int GameOfRockScissorCloth::score1 =0;
 int GameOfRockScissorCloth::score2 =0;
 const string GameOfRockScissorCloth::SelectString[3] = {"rock", "scissor", "cloth"};
+
+// 读取用户输入的选择并进行处理
 void GameOfRockScissorCloth::Read(){   
             cout << "Please select your weapon: (1) rock, (2) scissor, (3) cloth, (4) display (5)help, (6) quit" << endl;
             cin >> num1;
@@ -71,6 +91,8 @@ void GameOfRockScissorCloth::Read(){
                     break;
             }
         }
+
+// 生成计算机随机选择并计算结果
 void GameOfRockScissorCloth::random_num(){
         //用时间戳生成随机数
         //设置种子  
@@ -128,6 +150,7 @@ void GameOfRockScissorCloth::random_num(){
         }
 }
 
+// 主函数，游戏入口
 int main() {
     GameOfRockScissorCloth GameOfRockScissorCloth;
     do{
