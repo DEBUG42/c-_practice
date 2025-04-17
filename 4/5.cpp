@@ -26,7 +26,7 @@ class Date{
                 {
                     // 计算超出天数，并调整月份和年份
                     temp -= (28+is_leap_year - day);
-                    day = 1;
+                    day = 0;
                     month++;
                 }
                 else{
@@ -41,11 +41,10 @@ class Date{
                 {
                     // 计算超出天数，并调整月份
                     temp -= (30 - day);
-                    day = 1;
+                    day = 0;
                     month++;
                 }
                 else{
-                    // 计算剩余天数
                     day += temp;
                     temp = 0;
                 }
@@ -56,25 +55,22 @@ class Date{
             {
                 // 计算超出天数，并调整月份
                 temp -= (31 - day);
-                day = 1;
+                day = 0;
                 month++;
                 month %= 13;
                 year += (month / 12);
             }
             else{
-                // 计算剩余天数
                 day += temp;
                 temp = 0;
             }
-        }    
-   }
+        }
+    }        
         NewDate.year = year;
         NewDate.month = month;
         NewDate.day = day;
         return NewDate;
-    
     }
-
     // 重载减法运算符，用于在日期上减少指定的天数
     Date operator-(int days){
         Date NewDate;
@@ -147,7 +143,6 @@ class Date{
         NewDate.day = day;
         return NewDate;
     }
-
     // 重载输入流运算符，用于从输入流中读取日期
     friend istream& operator>>(istream& is, Date& d){
         is >> d.year >> d.month >> d.day;
