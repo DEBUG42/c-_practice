@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <ctime>
 #include <string>
+#include <chrono>
+#include <thread>
 using namespace std;
 
 // 定义选择类型的枚举
@@ -47,6 +49,7 @@ class GameOfRockScissorCloth {
         }
         // 游戏主逻辑函数
         void Game(){
+
             // 将num初始值转为其它数字
             Read();
             if(num1 == ROCK || num1 == SCISSOR || num1 == CLOTH){
