@@ -5,6 +5,8 @@
 #include <string>
 #include <chrono>
 #include <thread>
+#include <atomic>
+#include <mutex>
 using namespace std;
 
 // 定义选择类型的枚举
@@ -40,33 +42,42 @@ class GameOfRockScissorCloth {
         static int score2;
     public:   
         // 读取用户输入的选择
-        void Read();
+        void Read1();
+        void Read2();
+
         // 生成计算机随机选择
         void random_num();
         // 判断游戏是否继续
-        bool endGame(){
+        void endGame(){
+            isContinue = false;
+        }
+        bool is_Continue(){
             return isContinue;
         }
         // 游戏主逻辑函数
         void Game(){
-
             // 将num初始值转为其它数字
-            Read();
+            Read2();
             if(num1 == ROCK || num1 == SCISSOR || num1 == CLOTH){
                 random_num();
             }
 
         }
+        void displayScore(){
+            cout << "你的得分: " << score1 << endl;
+            cout << "电脑的得分: " << score2 << endl;
+        }
 
 };
 int GameOfRockScissorCloth::score1 =0;
 int GameOfRockScissorCloth::score2 =0;
-const string GameOfRockScissorCloth::SelectString[3] = {"rock", "scissor", "cloth"};
+const string GameOfRockScissorCloth::SelectString[3] = {"石头", "剪刀", "布"};
 
 // 读取用户输入的选择并进行处理
-void GameOfRockScissorCloth::Read(){   
-            cout << "Please select your weapon: (1) rock, (2) scissor, (3) cloth, (4) display (5)help, (6) quit" << endl;
+void GameOfRockScissorCloth::Read1(){
             cin >> num1;
+}
+void GameOfRockScissorCloth::Read2(){   
             num1-=1;
             select1 = (SelectType)num1;
             switch(select1){
@@ -80,17 +91,16 @@ void GameOfRockScissorCloth::Read(){
                     num1=2;
                     break;
                 case DISPLAY:
-                    cout << "Your Score: " << score1 << endl;
-                    cout << "Computer's Score: " << score2 << endl;
+                    displayScore();
                     break;
                 case HELP:
-                    cout << "Help: You can choose rock, scissor, or cloth to play the game. The rules are simple: you have to choose either rock, scissor, or cloth. If both players choose the same object, it's a tie. If one player chooses rock and the other chooses scissor, the rock wins. If one player chooses scissor and the other chooses cloth, the scissor wins. If one player chooses cloth and the other chooses rock, the cloth wins." << endl;
+                    cout << "帮助：输入数字1-3选择你要出的拳，输入数字4显示当前得分，输入数字5帮助，输入数字6退出游戏." << endl;
                     break;
                 case QUIT:
-                    isContinue = false;
+                    endGame();
                     break;
                 default:
-                    cout << "Invalid input!" << endl;
+                    cout << "输入错误！" << endl;
                     break;
             }
         }
@@ -101,8 +111,8 @@ void GameOfRockScissorCloth::random_num(){
         //设置种子  
         srand(time(0));  
         num2 = rand() % 3;
-        cout <<"Your choice: "<<SelectString[num1]<<endl;
-        cout << "Computer's choice: "<<SelectString[num2]<<endl;
+        cout <<"你的出拳: "<<SelectString[num1]<<endl;
+        cout << "电脑的出拳: "<<SelectString[num2]<<endl;
         //计算结果
         if(num1 == 0 && num2 == 0){
             result = TIE;
@@ -141,24 +151,68 @@ void GameOfRockScissorCloth::random_num(){
         }
         //更新分数
         if(result == WIN){
-            cout << "You win!" << endl;
+            cout << "你赢了!" << endl;
             score1++;
         }
         else if(result == LOSE){
-            cout << "You lose!" << endl;
+            cout << "你输了!" << endl;
             score2++;
         }
         else{
-            cout << "It's a tie!" << endl;
+            cout << "平局!" << endl;
         }
+}
+
+atomic<bool> isContinue1(true);
+mutex mtx;
+void countdown(int seconds,GameOfRockScissorCloth& GameOfRockScissorCloth){
+    cout << "请在倒计时内做出你的选择: (1) 石头, (2) 剪刀, (3) 布, (4) 显示分数 (5)帮助, (6) 退出游戏" << endl;
+    for(int i=seconds;i>=1&&isContinue1;i--){
+        lock_guard<mutex> lock(mtx);
+        cout <<"还剩"<<i<<"秒"<<endl;
+        this_thread::sleep_for(chrono::seconds(1));
+    }
+    if(isContinue1){
+        lock_guard<mutex> lock(mtx);
+        cout << "时间到！" << endl;
+        GameOfRockScissorCloth.displayScore();
+        cout <<"按任意键退出游戏"<<endl;
+        GameOfRockScissorCloth.endGame();
+        isContinue1 = false;
+    }
+}
+
+
+void listenForInput(GameOfRockScissorCloth& GameOfRockScissorCloth){
+    while (isContinue1 && cin.peek() == '\n') { // 检查是否还有时间并且没有输入
+        cin.ignore(); // 忽略缓冲区中的换行符
+    }
+    if (isContinue1) {
+        GameOfRockScissorCloth.Read1();
+        GameOfRockScissorCloth.Game();
+        //换两行方便显示
+        cout << endl;
+        cout << endl;
+        isContinue1 = false;
+    }
 }
 
 // 主函数，游戏入口
 int main() {
     GameOfRockScissorCloth GameOfRockScissorCloth;
-    do{
-        GameOfRockScissorCloth.Game();
 
-    }while(GameOfRockScissorCloth.endGame());
+    cout << "欢迎来到剪刀石头布游戏!" << endl;
+    this_thread::sleep_for(chrono::seconds(2));
+
+    do{
+        isContinue1 = true;
+        thread countdownThread(countdown, 5 ,ref(GameOfRockScissorCloth));
+        thread inputThread(listenForInput,ref(GameOfRockScissorCloth));
+
+        
+        countdownThread.join();
+        inputThread.join();
+
+    }while(GameOfRockScissorCloth.is_Continue());
     return 0;
 }
