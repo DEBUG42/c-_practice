@@ -108,11 +108,7 @@ void GameOfRockScissorCloth::Read(){
 // 生成计算机随机选择并计算结果
 void GameOfRockScissorCloth::random_num(){
 
-        static bool seedSet = false;
-        if(!seedSet){
-            srand(time(0));
-            seedSet = true;
-        }
+        srand(time(0));
         num2 = rand() % 3;
         cout <<"你的出拳: "<<SelectString[num1]<<endl;
         cout << "电脑的出拳: "<<SelectString[num2]<<endl;
