@@ -42,7 +42,7 @@ void Game() {
 
     // 游戏继续进行，直到玩家赢或输
     while(status == CONTINUE){
-        cout<<"按Enter继续游戏..."<<endl; // 提示玩家按Enter继续
+        
         cin.ignore(); // 等待玩家按下Enter
         sum = RollDice(); // 掷骰子并获取点数之和
         cout << "你当前的点数是：" << sum << endl; // 输出当前掷骰子的结果
@@ -51,6 +51,7 @@ void Game() {
         }else if(sum == 7){
             status = LOSE; // 当前点数为7时，玩家输
         }
+        cout<<"按Enter继续游戏..."<<endl; // 提示玩家按Enter继续
     }
 
     // 根据游戏状态输出最终结果
