@@ -55,7 +55,9 @@ private:
     int dealPos; // 定义发牌位置
     Card hands [8][21];//hands[0]是庄家
     int numOfCard[8];// 扑克牌数目
-    char name[8][20];
+    int numOfAce[8]={0}; // 玩家手中A的数目
+    int totalScore[8]={0}; // 玩家总分
+    string name[8];
     int numOfPlayer;
 
     bool isAlive[8]={false};     // 定义玩家是否活着
@@ -76,6 +78,7 @@ void GameOf21Point::Shuffle(){
     //先生成标准排序的52张牌
     for (int i = 0; i < 52; i++) {
         deck[i].rank = (RankType)(i%13+1);
+        deck[i].type = (CardType)(i%4);
     }    
     //然后将牌堆打乱
     for(int i=0;i<52;i++){
@@ -86,15 +89,48 @@ void GameOf21Point::Shuffle(){
     }
 }
 int GameOf21Point::GetTotalScore(Card hand[21],int n){
-    int totalScore = 0;
-
-    return totalScore;
+    totalScore[n] = 0;
+    numOfAce[n] = 0;
+    for(int k=0;k<numOfCard[n];k++){
+        if(hand[k].rank == ACE){
+            totalScore[n] += 11;
+            numOfAce[n]++;
+        }
+        else if(hand[k].rank >= 10)
+            totalScore[n] += 10;
+        else
+            totalScore[n] += hand[k].rank;
+    }
+    while(totalScore[n]>21&&numOfAce[n]>0){
+        totalScore[n]-=10;
+        numOfAce[n]--;
+    }
+ 
+    return totalScore[n];
 }
 void GameOf21Point::ShowStatus(int num,bool hideFirstCardAndTotalScore){
+    cout << name[num]<< "手牌:"<< endl;
+    if(hideFirstCardAndTotalScore == false){
+        for(int i=0;i<numOfCard[num];i++){
+            cout <<"第"<< i+1<<"张牌："<<hands[num][i]<<endl;
+        }
+        GetTotalScore(hands[num],num);
+        cout <<"总分为:"<<totalScore[num]<<endl;
+    if(totalScore[num]>21){
+        isAlive[num] = false; // 玩家淘汰
+        cout<<name[num]<<"的牌爆掉了"<<endl;    
+    }   
+    }
+    else{
+            cout << "第1张牌：<隐藏>"<<endl;
+        for(int i=1;i<numOfCard[num];i++){
+            cout <<"第"<< i+1<<"张牌："<<hands[num][i]<<endl;
+        }
+    }
 }
-
 void GameOf21Point::Game(){
 //初始化阶段
+    name[0] = "庄家"; // 定义庄家名字
     cout<<"欢迎来到21点游戏"<<endl;
     cout<<"请输入玩家人数(1-7):";
     cin>>numOfPlayer;
@@ -117,8 +153,8 @@ void GameOf21Point::Game(){
         hands [i][j].rank=EMPTY; //重置手牌
         isAlive[i] = true; // 其他玩家默认活着
         isContinue[i] = true; // 其他玩家默认继续游戏
+        }
     }
-
 //初始抽牌阶段    
     for(int i=0;i<=numOfPlayer;i++){
         for(int j=0;j<2;j++)
@@ -126,14 +162,18 @@ void GameOf21Point::Game(){
             hands[i][j] = DealOneCard(); // 发两张牌
             numOfCard[i]++; // 记录手牌数目
         }
-        }        
-    }
+    }        
+    cout<<endl;
     ShowStatus(0,true); // 显示庄家初始状态
+    cout<<endl;
+
     for(int i=1;i<=numOfPlayer;i++){
         ShowStatus(i,false); // 显示其他玩家初始状态
+        cout<<endl;
     }
 
 //开始游戏阶段
+    cout<<"玩家阶段开始"<<endl;
     bool gameContinue=true;
     do{
         gameContinue = false;
@@ -169,8 +209,19 @@ void GameOf21Point::Game(){
             }
         }
     }while(gameContinue == true);
+
+//结算阶段    
+    cout<<endl;
+    cout<<"玩家行动结束"<<endl;
+    cout<<"庄家行动"<<endl;
+    while(totalScore[0]<17){
+        hands[0][numOfCard[0]] = DealOneCard(); // 庄家发一张牌
+        numOfCard[0]++; // 记录手牌数目
+        ShowStatus(0,false); // 显示庄家状态
 }
-    
+    ShowStatus(0,true); // 显示庄家最终状态
+
+}
 int main(){
     GameOf21Point game;
     game.Game();
