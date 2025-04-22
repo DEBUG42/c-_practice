@@ -1,4 +1,6 @@
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 using namespace std;
 // 枚举数字类型
 typedef enum{
@@ -57,6 +59,7 @@ private:
     int numOfCard[8];// 扑克牌数目
     int numOfAce[8]={0}; // 玩家手中A的数目
     int totalScore[8]={0}; // 玩家总分
+    int blackJack[8]={0}; // 玩家21点分
     string name[8];
     int numOfPlayer;
 
@@ -171,7 +174,12 @@ void GameOf21Point::Game(){
         ShowStatus(i,false); // 显示其他玩家初始状态
         cout<<endl;
     }
-
+//判断一手blackjack
+    for(int i=0;i<=numOfPlayer;i++){
+        if(totalScore[i] == 21){
+            blackJack[i] = 1; // 玩家21点分
+    }
+}
 //开始游戏阶段
     cout<<"玩家阶段开始"<<endl;
     bool gameContinue=true;
@@ -214,15 +222,19 @@ void GameOf21Point::Game(){
     cout<<endl;
     cout<<"玩家行动结束"<<endl;
     cout<<"庄家行动"<<endl;
-    while(totalScore[0]<17){
+
+    ShowStatus(0,false); // 显示庄家状态
+    while(totalScore[0]<17||numOfAce[0]>0){
+        cout<<"庄家摸牌"<<endl;
         hands[0][numOfCard[0]] = DealOneCard(); // 庄家发一张牌
         numOfCard[0]++; // 记录手牌数目
         ShowStatus(0,false); // 显示庄家状态
-}
-    ShowStatus(0,true); // 显示庄家最终状态
+    }
+
 
 }
 int main(){
+    srand(time(0)); // 随机数种子
     GameOf21Point game;
     game.Game();
     return 0;
