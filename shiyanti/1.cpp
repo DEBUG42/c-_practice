@@ -189,10 +189,14 @@ void GameOf21Point::Game(){
         for(int i=1;i<=numOfPlayer;i++){
              // 默认不继续游戏除非有玩家还能抽牌
             if(isAlive[i] == true && isContinue[i] == true){
+                cout <<endl;
+                ShowStatus(i,false); // 显示玩家状态
+                cout <<endl;
                 cout <<name[i]<<":"<< "选择是否抽牌(y/n)"<<endl;
                 char answer;
                 do{
                 cin >> answer;
+                answer = tolower(answer);
                 switch(answer){
                     case 'y':
                     hands[i][numOfCard[i]] = DealOneCard(); // 发一张牌
@@ -224,18 +228,57 @@ void GameOf21Point::Game(){
     cout<<"庄家行动"<<endl;
 
     ShowStatus(0,false); // 显示庄家状态
-    while(totalScore[0]<17||numOfAce[0]>0){
+    cout<<endl;
+    while(totalScore[0]<17||(numOfAce[0]>0&&blackJack[0]==0)){
         cout<<"庄家摸牌"<<endl;
         hands[0][numOfCard[0]] = DealOneCard(); // 庄家发一张牌
         numOfCard[0]++; // 记录手牌数目
         ShowStatus(0,false); // 显示庄家状态
+        cout<<endl;
     }
 
-
+    if(isAlive[0] == false){
+        for(int i=1;i<=numOfPlayer;i++){
+            if(isAlive[i] == true){
+                cout <<name[i]<< "获胜"<<endl;
+                }
+            else{
+                cout <<name[i]<< "平局"<<endl;
+                }
+            }
+    }
+    else if(isAlive[0] == true&&blackJack[0] == 1){
+        for(int i=1;i<=numOfPlayer;i++){
+            if(isAlive[i] == true&&blackJack[i] == 1){
+                cout <<name[i]<< "平局"<<endl;
+            }
+            else{
+                cout <<name[i]<< "输了"<<endl;
+                }
+        }
+    }
+    else{
+        for(int i=1;i<=numOfPlayer;i++){
+            if(isAlive[i] == true&&blackJack[i] == 1){
+                cout <<name[i]<< "赢了"<<endl;
+            }
+            else if(isAlive[i] == true&&totalScore[i]>totalScore[0]){
+                cout <<name[i]<< "获胜"<<endl;
+            }
+            else if(isAlive[i] == true&&totalScore[i]==totalScore[0]){
+                cout <<name[i]<< "平局"<<endl;
+            }
+            else{
+                cout <<name[i]<< "输了"<<endl;
+            }
+            
+        }
+    }
 }
 int main(){
     srand(time(0)); // 随机数种子
     GameOf21Point game;
     game.Game();
+    system("pause");
     return 0;
 }
